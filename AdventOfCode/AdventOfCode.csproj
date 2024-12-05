@@ -1,0 +1,59 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Day01\Data.aoc" />
+    <None Remove="Day01\ExampleData.aoc" />
+    <None Remove="Day02\Data.aoc" />
+    <None Remove="Day02\ExampleData.aoc" />
+    <None Remove="Day03\Data.aoc" />
+    <None Remove="Day03\ExampleData1.aoc" />
+    <None Remove="Day03\ExampleData2.aoc" />
+    <None Remove="Day04\Data.aoc" />
+    <None Remove="Day04\ExampleData.aoc" />
+    <None Remove="Day05\Data.aoc" />
+    <None Remove="Day05\ExampleData.aoc" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Day01\Data.aoc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Day01\ExampleData.aoc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Day02\Data.aoc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Day02\ExampleData.aoc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Day03\Data.aoc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Day03\ExampleData1.aoc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Day03\ExampleData2.aoc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Day04\Data.aoc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Day04\ExampleData.aoc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Day05\Data.aoc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Day05\ExampleData.aoc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+</Project>
