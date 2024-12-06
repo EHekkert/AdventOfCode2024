@@ -24,22 +24,22 @@ namespace AdventOfCodeTest
             Assert.Equal(5531, result);
         }
 
-        //[Fact]
-        //public void Part2Example()
-        //{
-        //    var lines = File.ReadAllLines(@".\Day06\ExampleData.aoc");
-        //    var result = code.Part2(lines);
+        [Fact]
+        public void Part2Example()
+        {
+            var lines = File.ReadAllLines(@".\Day06\ExampleData.aoc");
+            var result = code.Part2(lines);
 
-        //    Assert.Equal(0, result);
-        //}
+            Assert.Equal(6, result);
+        }
 
-        //[Fact]
-        //public void Part2()
-        //{
-        //    var lines = File.ReadAllLines(@".\Day06\Data.aoc");
-        //    var result = code.Part2(lines);
+        [Fact]
+        public void Part2()
+        {
+            var lines = File.ReadAllLines(@".\Day06\Data.aoc");
+            var result = code.Part2(lines);
 
-        //    Assert.Equal(0, result);
-        //}
+            Assert.Equal(2165, result);
+        }
     }
 }

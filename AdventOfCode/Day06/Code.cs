@@ -6,25 +6,42 @@ namespace AdventOfCode.Day06
     {
         public string _obstructionPattern = "#";
         public string _guardPattern = @"\^";
-        private Map? _map;
 
         public int? Part1(string[] lines)
         {
-            ProcessData(lines);
+            var map = ProcessData(lines);
 
-            PatrolMap();
+            PatrolMap(map);
 
-            return _map?.Visited.Count;
+            return map?.Visited.Count;
         }
 
         public int Part2(string[] lines)
         {
-            ProcessData(lines);
+            var loopCount = 0;
+            var initialMap = ProcessData(lines);
 
-            throw new NotImplementedException();
+            PatrolMap(initialMap);
+
+            for (int i = 1; i < initialMap.Visited.Count; i++)
+            {
+                var temporaryObstruction = initialMap.Visited[i];
+                var map = ProcessData(lines, temporaryObstruction);
+
+                try
+                {
+                    PatrolMap(map);
+                }
+                catch (LoopException)
+                {
+                    loopCount++;
+                }
+            }
+
+            return loopCount;
         }
 
-        private void ProcessData(string[] lines)
+        private Map ProcessData(string[] lines, Coordinate temporaryObstruction = null)
         {
             Map map = new Map
             {
@@ -37,9 +54,11 @@ namespace AdventOfCode.Day06
                 }
             };
 
+            map.SetTemporaryObstruction(temporaryObstruction);
+
             for(int i = 0; i < lines.Length; i++)
             {
-                map.Obstructions.AddRange(Regex.Matches(lines[i], _obstructionPattern).Select(m => new Coordinate { X = m.Index + 1, Y = i + 1}).ToList());
+                map.AddObstructions(Regex.Matches(lines[i], _obstructionPattern).Select(m => new Coordinate { X = m.Index + 1, Y = i + 1}).ToList());
                 var guard = Regex.Matches(lines[i], _guardPattern).Select(g => new Guard(new Coordinate { X = g.Index + 1, Y = i + 1 }, Direction.North)).FirstOrDefault();
                 if (guard != null)
                 {
@@ -47,21 +66,21 @@ namespace AdventOfCode.Day06
                 }
             }
 
-            _map = map;
+            return map;
         }
 
-        private void PatrolMap()
+        private void PatrolMap(Map map)
         {
-            Guard? guard = _map.Guard;
+            Guard? guard = map.Guard;
             if (guard != null)
             {
                 do
                 {
                     //Register location 
-                    _map.RegisterLocation(guard.Position);
+                    map.RegisterLocation(guard.Position);
 
                     //Can guard move forward
-                    if (!PathBlocked())
+                    if (!PathBlocked(map))
                     {
                         //Move
                         guard.MoveForward();
@@ -72,7 +91,7 @@ namespace AdventOfCode.Day06
                         guard.ChangeDirection();
                     }
 
-                } while (!IsGuardOffMap()); //Stop when guard leaves map
+                } while (!IsGuardOffMap(map)); //Stop when guard leaves map
             }
         }
 
@@ -80,23 +99,23 @@ namespace AdventOfCode.Day06
         /// Is the guard within the confines of the map
         /// </summary>
         /// <returns></returns>
-        private bool IsGuardOffMap()
+        private bool IsGuardOffMap(Map map)
         {
-            Guard? guard = _map.Guard;
+            Guard? guard = map.Guard;
             if (guard == null)
             {
                 return true;
             }
             
-            return guard.Position.X < _map.Limits.MinX ||
-                   guard.Position.X > _map.Limits.MaxX ||
-                   guard.Position.Y < _map.Limits.MinY ||
-                   guard.Position.Y > _map.Limits.MaxY;
+            return guard.Position.X < map.Limits.MinX ||
+                   guard.Position.X > map.Limits.MaxX ||
+                   guard.Position.Y < map.Limits.MinY ||
+                   guard.Position.Y > map.Limits.MaxY;
         }
 
-        private bool PathBlocked()
+        private bool PathBlocked(Map map)
         {
-            Guard? guard = _map.Guard;
+            Guard? guard = map.Guard;
             if (guard == null)
             {
                 throw new Exception("No guard present");
@@ -105,13 +124,13 @@ namespace AdventOfCode.Day06
             switch (guard.Direction)
             {
                 case Direction.North:
-                    return _map.Obstructions.Any(o => o.X == guard.Position.X && o.Y == guard.Position.Y - 1);
+                    return map.Obstructions.Any(o => o.X == guard.Position.X && o.Y == guard.Position.Y - 1);
                 case Direction.East:
-                    return _map.Obstructions.Any(o => o.X == guard.Position.X + 1 && o.Y == guard.Position.Y);
+                    return map.Obstructions.Any(o => o.X == guard.Position.X + 1 && o.Y == guard.Position.Y);
                 case Direction.South:
-                    return _map.Obstructions.Any(o => o.X == guard.Position.X && o.Y == guard.Position.Y + 1);
+                    return map.Obstructions.Any(o => o.X == guard.Position.X && o.Y == guard.Position.Y + 1);
                 case Direction.West:
-                    return _map.Obstructions.Any(o => o.X == guard.Position.X - 1 && o.Y == guard.Position.Y);
+                    return map.Obstructions.Any(o => o.X == guard.Position.X - 1 && o.Y == guard.Position.Y);
                 default:
                     throw new Exception("Cannot determine if path is blocked");
             }
