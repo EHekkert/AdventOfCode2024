@@ -1,4 +1,6 @@
-﻿namespace AdventOfCode.Day06.WithHelp
+﻿using AdventOfCode.Tools;
+
+namespace AdventOfCode.Day06.WithHelp
 {
     public class Code
     {

@@ -20,6 +20,8 @@
     <None Remove="Day05\ExampleData.aoc" />
     <None Remove="Day06\Data.aoc" />
     <None Remove="Day06\ExampleData.aoc" />
+    <None Remove="Day07\Data.aoc" />
+    <None Remove="Day07\ExampleData.aoc" />
   </ItemGroup>
 
   <ItemGroup>
@@ -62,6 +64,21 @@
     <Content Include="Day06\ExampleData.aoc">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Day07\Data.aoc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Day07\ExampleData.aoc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="2024\" />
+    <Folder Include="Day08\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Tools\Tools.csproj" />
   </ItemGroup>
 
 </Project>
