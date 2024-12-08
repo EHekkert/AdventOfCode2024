@@ -73,7 +73,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="2024\" />
     <Folder Include="Day08\" />
   </ItemGroup>
 
