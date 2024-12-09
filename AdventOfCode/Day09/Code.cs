@@ -7,8 +7,8 @@ namespace AdventOfCode.Day09
         public long Part1(string line)
         {
             var blocks = DiskMapToBlocks(line);
-            var defragmented = Defragment(blocks);
-            return CalculateChecksum(defragmented);
+            var fragmented = Fragment(blocks);
+            return CalculateChecksum(fragmented);
         }
 
         public long Part2(string line)
@@ -53,7 +53,7 @@ namespace AdventOfCode.Day09
             return result;
         }
 
-        public string[] Defragment(string[] line)
+        public string[] Fragment(string[] line)
         {
             int index1 = 0;
             int index2 = line.Length - 1;

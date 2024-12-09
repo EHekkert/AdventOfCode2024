@@ -25,7 +25,7 @@ namespace AdventOfCodeTest
         public void TestDefragment(string dataAsString, string expectedAsString)
         {
             var data = dataAsString.Select(x => x.ToString()).ToArray();
-            var result = code.Defragment(data);
+            var result = code.Fragment(data);
 
             var expected = expectedAsString.Select(x => x.ToString()).ToArray();
             Assert.Equal(expected, result);
