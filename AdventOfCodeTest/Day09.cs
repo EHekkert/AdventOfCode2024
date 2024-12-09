@@ -22,7 +22,7 @@ namespace AdventOfCodeTest
         [Theory]
         [InlineData("0..111....22222", "022111222......")]
         [InlineData("00...111...2...333.44.5555.6666.777.888899", "0099811188827773336446555566..............")]
-        public void TestDefragment(string dataAsString, string expectedAsString)
+        public void TestFragment(string dataAsString, string expectedAsString)
         {
             var data = dataAsString.Select(x => x.ToString()).ToArray();
             var result = code.Fragment(data);
