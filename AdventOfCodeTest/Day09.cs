@@ -59,22 +59,34 @@ namespace AdventOfCodeTest
             Assert.Equal(6288599492129, result);
         }
 
-        //[Fact]
-        //public void Part2Example()
-        //{
-        //    var lines = File.ReadAllLines(@$".\Day{dayNumber}\ExampleData.aoc");
-        //    var result = code.Part2(lines);
+        [Theory]
+        [InlineData("0..111....22222", "0..111....22222")]
+        [InlineData("00...111...2...333.44.5555.6666.777.888899", "00992111777.44.333....5555.6666.....8888..")]
+        public void TestDeFragment(string dataAsString, string expectedAsString)
+        {
+            var data = dataAsString.Select(x => x.ToString()).ToArray();
+            var result = code.Defragment(data);
 
-        //    Assert.Equal(34, result);
-        //}
+            var expected = expectedAsString.Select(x => x.ToString()).ToArray();
+            Assert.Equal(expected, result);
+        }
 
-        //[Fact]
-        //public void Part2()
-        //{
-        //    var lines = File.ReadAllLines(@$".\Day{dayNumber}\Data.aoc");
-        //    var result = code.Part2(lines);
+        [Fact]
+        public void Part2Example()
+        {
+            var line = File.ReadAllText(@$".\Day{dayNumber}\ExampleData.aoc");
+            var result = code.Part2(line);
 
-        //    Assert.Equal(1293, result);
-        //}
+            Assert.Equal(2858, result);
+        }
+
+        [Fact]
+        public void Part2()
+        {
+            var line = File.ReadAllText(@$".\Day{dayNumber}\Data.aoc");
+            var result = code.Part2(line);
+
+            Assert.Equal(6321896265143, result);
+        }
     }
 }

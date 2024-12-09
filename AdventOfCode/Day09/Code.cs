@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using System.Text.RegularExpressions;
 
 namespace AdventOfCode.Day09
 {
@@ -13,7 +14,9 @@ namespace AdventOfCode.Day09
 
         public long Part2(string line)
         {
-            throw new NotImplementedException();
+            var blocks = DiskMapToBlocks(line);
+            var defragmented = Defragment(blocks);
+            return CalculateChecksum(defragmented);
         }
 
         public string[] DiskMapToBlocks(string line)
@@ -82,18 +85,99 @@ namespace AdventOfCode.Day09
             return line;
         }
 
-        public long CalculateChecksum(string[] line)
+        public string[] Defragment(string[] line)
         {
-            long checksum = 0;
-            int multiplier = 0;
+            string freeSpaceMap = GetFreeSapceMap(line);
+
+            int index = line.Length - 1;
 
             do
             {
-                checksum += Convert.ToInt16(line[multiplier]) * multiplier;
-                multiplier++;
-            } while (line[multiplier] != ".");
+                if (line[index] != ".")
+                {
+                    var startIndex = Array.IndexOf(line, line[index]);
+                    var length = index - startIndex + 1;
+
+                    var pattern = @$"\.{{{length}}}";
+                    Match match = Regex.Match(freeSpaceMap, pattern);
+                    if (match.Success)
+                    {
+                        var freeSpaceIndex = match.Index;
+
+                        if (freeSpaceIndex < startIndex)
+                        {
+                            for (int i = 0; i < length; i++)
+                            {
+                                line[freeSpaceIndex + i] = line[startIndex + i];
+                                line[startIndex + i] = ".";
+                            }
+
+                            //Before swapped free space
+                            int segment1Index = 0;
+                            int segment1Length = freeSpaceIndex;
+
+                            //File blocks that were swapped
+                            int segment2Index = startIndex;
+                            int segment2Length = length;
+
+                            //Between swapped free space and file blocks
+                            int segment3Index = freeSpaceIndex + length;
+                            int segment3Length = startIndex - freeSpaceIndex - length;
+
+                            //Free space that was swapped
+                            int segment4Index = freeSpaceIndex;
+                            int segment4Length = length;
+
+                            //After swapped file blocks
+                            int segment5Index = startIndex + length;
+                            int segment5Length = freeSpaceMap.Length - startIndex - length;
+
+                            StringBuilder sb = new();
+                            sb.Append(freeSpaceMap.Substring(segment1Index, segment1Length));
+                            sb.Append(freeSpaceMap.Substring(segment2Index, segment2Length));
+                            sb.Append(freeSpaceMap.Substring(segment3Index, segment3Length));
+                            sb.Append(freeSpaceMap.Substring(segment4Index, segment4Length));
+                            sb.Append(freeSpaceMap.Substring(segment5Index, segment5Length));
+
+                            freeSpaceMap = sb.ToString();
+                        }
+                    }
+
+                    index = startIndex - 1;
+                }
+                else
+                {
+                    index--;
+                }
+            } while (index >= 0);
+
+            return line;
+        }
+
+        public long CalculateChecksum(string[] line)
+        {
+            long checksum = 0;
+
+            for (int multiplier = 0; multiplier < line.Length; multiplier++) {
+                if (line[multiplier] != ".")
+                {
+                    checksum += Convert.ToInt16(line[multiplier]) * multiplier;
+                }
+            };
 
             return checksum;
+        }
+
+        private string GetFreeSapceMap(string[] line)
+        {
+            StringBuilder sb = new();
+            for (int i = 0; i < line.Length; i++)
+            {
+                char character = line[i] == "." ? '.' : 'X';
+                sb.Append(character);
+            }
+
+            return sb.ToString();
         }
     }
 }
