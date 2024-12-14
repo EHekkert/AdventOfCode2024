@@ -35,13 +35,16 @@ namespace AdventOfCodeTest
         //    Assert.Equal(480, result);
         //}
 
-        //[Fact]
-        //public void Part2()
-        //{
-        //    var lines = File.ReadAllLines(@$".\Day{dayNumber}\Data.aoc");
-        //    var result = code.Part2(lines);
+        [Fact]
+        public void Part2()
+        {
+            var lines = File.ReadAllLines(@$".\Day{dayNumber}\Data.aoc");
+            for (int i = 72; i < 1000000000; i=i+103)
+            {
+                code.Part2(lines, 101, 103, i);
+            }
 
-        //    Assert.Equal(0, result);
-        //}
+            //Assert.Equal(0, result);
+        }
     }
 }

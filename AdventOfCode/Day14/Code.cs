@@ -1,22 +1,24 @@
 ﻿using AdventOfCode.Tools;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace AdventOfCode.Day14
 {
     public class Code
     {
-        private HashSet<Robot> _robots = new ();
+        private HashSet<Robot> _robots = new();
         private int _roomWidth = 101;
         private int _roomHeight = 103;
 
         public int Part1(string[] lines, int roomWidth, int roomHeight, int seconds)
         {
+            _robots = new();
             _roomWidth = roomWidth;
             _roomHeight = roomHeight;
 
             string pattern = @"\-*\d+";
 
-            for(int i = 0; i < lines.Count(); i++)
+            for (int i = 0; i < lines.Count(); i++)
             {
                 var matches = Regex.Matches(lines[i], pattern);
                 _robots.Add(new Robot
@@ -32,9 +34,28 @@ namespace AdventOfCode.Day14
             return CalculateSafetyFactor();
         }
 
-        public int Part2(string[] line)
+        public void Part2(string[] lines, int roomWidth, int roomHeight, int seconds)
         {
-            throw new NotImplementedException();
+            _robots = new();
+            _roomWidth = roomWidth;
+            _roomHeight = roomHeight;
+
+            string pattern = @"\-*\d+";
+
+            for (int i = 0; i < lines.Count(); i++)
+            {
+                var matches = Regex.Matches(lines[i], pattern);
+                _robots.Add(new Robot
+                {
+                    Id = i,
+                    Position = new Point(Convert.ToInt32(matches[0].Value), Convert.ToInt32(matches[1].Value)),
+                    Velocity = new Point(Convert.ToInt32(matches[2].Value), Convert.ToInt32(matches[3].Value)),
+                });
+            }
+
+            MoveRobots(seconds);
+
+            DumpGrid(seconds);
         }
 
         private void MoveRobots(int seconds)
@@ -88,6 +109,25 @@ namespace AdventOfCode.Day14
             }
 
             return robotsInQuadrant;
+        }
+
+        private void DumpGrid(int seconds)
+        {
+            StringBuilder sb = new StringBuilder();
+
+            var file = @$"c:\temp\AoC\103\{seconds}.txt";
+            for (int y = 0; y < _roomHeight; y++)
+            {
+                char[] line = new char[_roomWidth];
+                for (int x = 0; x < _roomWidth; x++)
+                {
+                    line[x] = _robots.Any(r => r.Position == new Point(x, y)) ? 'X' : '.';
+                }
+
+                sb.AppendLine(new string(line));
+            }
+
+            File.AppendAllText(file, sb.ToString());
         }
     }
 }
