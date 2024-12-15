@@ -55,7 +55,7 @@ namespace AdventOfCode.Day14
 
             MoveRobots(seconds);
 
-            DumpGrid(seconds);
+            //DumpGrid(seconds);
         }
 
         private void MoveRobots(int seconds)
