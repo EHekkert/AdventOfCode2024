@@ -36,12 +36,30 @@ namespace AdventOfCodeTest
         }
 
         [Fact]
-        public void Part21()
+        public void Part2Example1()
+        {
+            var line = File.ReadAllText(@$".\Day{dayNumber}\ExampleData3.aoc");
+            var result = code.Part2(line);
+
+            Assert.Equal(618, result);
+        }
+
+        [Fact]
+        public void Part2Example2()
+        {
+            var line = File.ReadAllText(@$".\Day{dayNumber}\ExampleData2.aoc");
+            var result = code.Part2(line);
+
+            Assert.Equal(9021, result);
+        }
+
+        [Fact]
+        public void Part2()
         {
             var line = File.ReadAllText(@$".\Day{dayNumber}\Data.aoc");
             var result = code.Part2(line);
 
-            Assert.Equal(0, result);
+            Assert.Equal(1471049, result);
         }
     }
 }

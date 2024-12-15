@@ -39,6 +39,7 @@
     <None Remove="Day15\Data.aoc" />
     <None Remove="Day15\ExampleData1.aoc" />
     <None Remove="Day15\ExampleData2.aoc" />
+    <None Remove="Day15\ExampleData3.aoc" />
   </ItemGroup>
 
   <ItemGroup>
@@ -136,6 +137,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Day15\ExampleData2.aoc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Day15\ExampleData3.aoc">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
