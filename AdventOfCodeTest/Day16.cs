@@ -27,7 +27,32 @@ namespace AdventOfCodeTest
         }
 
         [Fact]
+        public void Part1TestData()
+        {
+            var lines = File.ReadAllLines(@$".\Day{dayNumber}\TestData.txt");
+            var result = code.Part1(lines);
+
+            Assert.Equal(7038, result);
+        }
+
+        [Fact]
         public void Part1()
+        {
+            // Set the stack size you need (e.g., 10 MB)
+            int stackSize = 20 * 1024 * 1024; // 10 MB in bytes
+
+            // Create the thread, specifying the stack size
+            Thread thread = new Thread(new ThreadStart(Test), stackSize);
+
+            // Start the thread
+            thread.Start();
+
+            // Wait for the thread to finish if necessary
+            thread.Join();
+
+        }
+
+        private void Test()
         {
             var lines = File.ReadAllLines(@$".\Day{dayNumber}\Data.aoc");
             var result = code.Part1(lines);

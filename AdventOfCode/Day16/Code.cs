@@ -1,19 +1,18 @@
 ﻿using AdventOfCode.Tools;
+using System.Text;
 
 namespace AdventOfCode.Day16
 {
     public class Code
     {
-        public object _lock2 = new();
-        public object _lock = new();
-
         private int _width;
         private int _height;
         private char[,] _map;
         private Point _endpoint = new Point(-1,-1);
         private long _lowestScore = long.MaxValue;
+        private HashSet<(Point location, Point direction)> _lowestScoringRoute = new();
 
-        //private HashSet<Point> _allVisitedLocations = new();
+        private HashSet<(Point location, Point direction)> deadEnds = new();
 
         public long Part1(string[] lines)
         {
@@ -53,7 +52,7 @@ namespace AdventOfCode.Day16
 
             Point startDirection = new Point(1, 0);
             
-            var lowestScore = FindLowestScoreAsync(startPoint, startDirection).Result;
+            var lowestScore = FindLowestScoreAsync(startPoint, startDirection);
 
             //List<Point> allVisitedLocations = new List<Point>(_allVisitedLocations);
             //allVisitedLocations = allVisitedLocations.OrderBy(o => o.Y).ThenBy(o => o.X).ToList();
@@ -65,6 +64,13 @@ namespace AdventOfCode.Day16
 
             //File.AppendAllText(@"c:\temp\AoC\VisitedLocations.txt", sb.ToString());
 
+            StringBuilder sb = new();
+            foreach (var position in _lowestScoringRoute)
+            {
+                sb.AppendLine($"{position.location.X},{position.location.Y} - {position.direction.X},{position.direction.Y}");
+            }
+            File.AppendAllText(@"c:\temp\AoC\Route.txt", sb.ToString());
+
             return lowestScore;
         }
 
@@ -73,47 +79,69 @@ namespace AdventOfCode.Day16
             throw new NotImplementedException();
         }
 
-        private async Task<long> FindLowestScoreAsync(Point startLocation, Point startDirection)
+        private long FindLowestScoreAsync(Point startLocation, Point startDirection)
         {
-            HashSet<Point> visitedLocations = new();
+            HashSet<(Point location, Point direction)> visitedLocations = new();
             long currentScore = 0;
 
-            await CheckLocationAsync(startLocation, startDirection, visitedLocations, currentScore);
+            CheckLocationAsync(startLocation, startDirection, visitedLocations, currentScore);
 
             return _lowestScore;
         }
 
-        private async Task CheckLocationAsync(Point location, Point direction, HashSet<Point> locationsVisited, long currentScore)
+        private bool CheckLocationAsync(Point location, Point direction, HashSet<(Point location,Point direction)> locationsVisited, long currentScore)
         {
-            HashSet<Point> visitedLocations = new HashSet<Point>(locationsVisited);
-
-            if (currentScore >= _lowestScore || visitedLocations.Contains(location))
+            if (locationsVisited.Any(l => l.location == location) || deadEnds.Contains((location, direction)))
             {
-                return;
+                //loop detected
+                return false;
             }
 
             if (location == _endpoint)
             {
-                await UpdateLowestScore(currentScore);
-                return;
+                UpdateLowestScore(currentScore, locationsVisited);
+                
+                return true;
             }
 
-            visitedLocations.Add(location);
+            locationsVisited.Add((location, direction));
 
-            HashSet<Point> possibleDirections = await GetPossibleDirectionsAsync(location, direction);
+            //File.AppendAllText(@"c:\temp\AoC\PathsFollowed.txt", $"{location.X},{location.Y}{Environment.NewLine}");
+
+            HashSet<Point> possibleDirections = GetPossibleDirectionsAsync(location, direction);
             if (!possibleDirections.Any())
             {
-                //Deadend
-                return;
+                return false;
             }
-
+            
+            var pathPossible = false;
             foreach (var possibleDirection in possibleDirections)
             {
-                await CheckDirectionAsync(location, direction, possibleDirection, visitedLocations, currentScore);
+                if (location == new Point(4, 7) && direction == new Point(0,-1) && possibleDirection == new Point(1, 0))
+                {
+                    StringBuilder sb = new();
+                    foreach (var position in locationsVisited)
+                    {
+                        sb.AppendLine($"{position.location.X},{position.location.Y} - {position.direction.X},{position.direction.Y}");
+                    }
+                    File.AppendAllText(@"c:\temp\AoC\visited.txt", sb.ToString());
+                }
+                HashSet<(Point location, Point direction)> visitedLocations = new HashSet<(Point location, Point direction)>(locationsVisited);
+
+                if (CheckDirectionAsync(location, direction, possibleDirection, visitedLocations, currentScore))
+                {
+                    pathPossible = true;
+                }
+                else
+                {
+                    deadEnds.Add((location + possibleDirection, possibleDirection));
+                }
             }
+
+            return pathPossible;
         }
 
-        private async Task CheckDirectionAsync(Point location, Point currentDirection, Point directionToCheck, HashSet<Point> visitedLocations, long score)
+        private bool CheckDirectionAsync(Point location, Point currentDirection, Point directionToCheck, HashSet<(Point location, Point direction)> visitedLocations, long score)
         {
             if (directionToCheck != currentDirection)
             {
@@ -122,10 +150,10 @@ namespace AdventOfCode.Day16
 
             score += 1;
 
-            await CheckLocationAsync(location + directionToCheck, directionToCheck, visitedLocations, score);
+            return CheckLocationAsync(location + directionToCheck, directionToCheck, visitedLocations, score);
         }
 
-        private async Task<HashSet<Point>> GetPossibleDirectionsAsync(Point location, Point direction)
+        private HashSet<Point> GetPossibleDirectionsAsync(Point location, Point direction)
         {
             char[] validFields = new char[2] { '.', 'E' };
 
@@ -170,15 +198,13 @@ namespace AdventOfCode.Day16
             return _map[locationToRight.X, locationToRight.Y];
         }
 
-        private async Task UpdateLowestScore(long score)
+        private void UpdateLowestScore(long score, HashSet<(Point location, Point direction)> visitedLocations)
         {
-            //lock (_lock)
-            //{
-                if (score < _lowestScore)
-                {
-                    _lowestScore = score;
-                }
-            //}
+            if (score < _lowestScore)
+            {
+                _lowestScore = score;
+                _lowestScoringRoute = visitedLocations;
+            }
         }
     }
 }
