@@ -8,7 +8,7 @@
 
         public long Part1()
         {
-
+            throw new NotImplementedException();
         }
     }
 }

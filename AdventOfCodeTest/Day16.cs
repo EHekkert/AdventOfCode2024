@@ -54,10 +54,19 @@ namespace AdventOfCodeTest
 
         private void Test()
         {
-            var lines = File.ReadAllLines(@$".\Day{dayNumber}\Data.aoc");
-            var result = code.Part1(lines);
+            try
+            {
+                var lines = File.ReadAllLines(@$".\Day{dayNumber}\Data.aoc");
+                var result = code.Part1(lines);
 
-            Assert.Equal(0, result);
+                Assert.Equal(102460, result);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+            
         }
 
         //[Fact]

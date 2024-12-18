@@ -1,5 +1,4 @@
 ﻿using AdventOfCode.Tools;
-using System.Text;
 
 namespace AdventOfCode.Day16
 {
@@ -10,9 +9,8 @@ namespace AdventOfCode.Day16
         private char[,] _map;
         private Point _endpoint = new Point(-1,-1);
         private long _lowestScore = long.MaxValue;
-        private HashSet<(Point location, Point direction)> _lowestScoringRoute = new();
 
-        private HashSet<(Point location, Point direction)> deadEnds = new();
+        private HashSet<(Point location, Point direction, long score)> _visited = new();
 
         public long Part1(string[] lines)
         {
@@ -54,23 +52,6 @@ namespace AdventOfCode.Day16
             
             var lowestScore = FindLowestScoreAsync(startPoint, startDirection);
 
-            //List<Point> allVisitedLocations = new List<Point>(_allVisitedLocations);
-            //allVisitedLocations = allVisitedLocations.OrderBy(o => o.Y).ThenBy(o => o.X).ToList();
-            //StringBuilder sb = new StringBuilder();
-            //foreach (var visitedLocation in allVisitedLocations)
-            //{
-            //    sb.AppendLine($"{visitedLocation.X},{visitedLocation.Y}");
-            //}
-
-            //File.AppendAllText(@"c:\temp\AoC\VisitedLocations.txt", sb.ToString());
-
-            StringBuilder sb = new();
-            foreach (var position in _lowestScoringRoute)
-            {
-                sb.AppendLine($"{position.location.X},{position.location.Y} - {position.direction.X},{position.direction.Y}");
-            }
-            File.AppendAllText(@"c:\temp\AoC\Route.txt", sb.ToString());
-
             return lowestScore;
         }
 
@@ -81,67 +62,43 @@ namespace AdventOfCode.Day16
 
         private long FindLowestScoreAsync(Point startLocation, Point startDirection)
         {
-            HashSet<(Point location, Point direction)> visitedLocations = new();
             long currentScore = 0;
 
-            CheckLocationAsync(startLocation, startDirection, visitedLocations, currentScore);
+            CheckLocationAsync(startLocation, startDirection, currentScore);
 
             return _lowestScore;
         }
 
-        private bool CheckLocationAsync(Point location, Point direction, HashSet<(Point location,Point direction)> locationsVisited, long currentScore)
+        private void CheckLocationAsync(Point location, Point direction, long currentScore)
         {
-            if (locationsVisited.Any(l => l.location == location) || deadEnds.Contains((location, direction)))
+            var visited = _visited.FirstOrDefault(v => v.location == location && v.direction == direction);
+
+            if ((visited.location != new Point(0,0) && visited.score <= currentScore) || currentScore > _lowestScore)
             {
-                //loop detected
-                return false;
+                return;
             }
 
             if (location == _endpoint)
             {
-                UpdateLowestScore(currentScore, locationsVisited);
-                
-                return true;
+                UpdateLowestScore(currentScore);
             }
 
-            locationsVisited.Add((location, direction));
-
-            //File.AppendAllText(@"c:\temp\AoC\PathsFollowed.txt", $"{location.X},{location.Y}{Environment.NewLine}");
-
-            HashSet<Point> possibleDirections = GetPossibleDirectionsAsync(location, direction);
-            if (!possibleDirections.Any())
+            if (visited.location != new Point(0, 0))
             {
-                return false;
+                _visited.Remove(visited);
             }
+
+            _visited.Add((location, direction, currentScore));
             
-            var pathPossible = false;
+            HashSet<Point> possibleDirections = GetPossibleDirectionsAsync(location, direction);
+            
             foreach (var possibleDirection in possibleDirections)
             {
-                if (location == new Point(4, 7) && direction == new Point(0,-1) && possibleDirection == new Point(1, 0))
-                {
-                    StringBuilder sb = new();
-                    foreach (var position in locationsVisited)
-                    {
-                        sb.AppendLine($"{position.location.X},{position.location.Y} - {position.direction.X},{position.direction.Y}");
-                    }
-                    File.AppendAllText(@"c:\temp\AoC\visited.txt", sb.ToString());
-                }
-                HashSet<(Point location, Point direction)> visitedLocations = new HashSet<(Point location, Point direction)>(locationsVisited);
-
-                if (CheckDirectionAsync(location, direction, possibleDirection, visitedLocations, currentScore))
-                {
-                    pathPossible = true;
-                }
-                else
-                {
-                    deadEnds.Add((location + possibleDirection, possibleDirection));
-                }
+                CheckDirectionAsync(location, direction, possibleDirection, currentScore);
             }
-
-            return pathPossible;
         }
 
-        private bool CheckDirectionAsync(Point location, Point currentDirection, Point directionToCheck, HashSet<(Point location, Point direction)> visitedLocations, long score)
+        private void CheckDirectionAsync(Point location, Point currentDirection, Point directionToCheck, long score)
         {
             if (directionToCheck != currentDirection)
             {
@@ -150,7 +107,7 @@ namespace AdventOfCode.Day16
 
             score += 1;
 
-            return CheckLocationAsync(location + directionToCheck, directionToCheck, visitedLocations, score);
+            CheckLocationAsync(location + directionToCheck, directionToCheck, score);
         }
 
         private HashSet<Point> GetPossibleDirectionsAsync(Point location, Point direction)
@@ -198,12 +155,11 @@ namespace AdventOfCode.Day16
             return _map[locationToRight.X, locationToRight.Y];
         }
 
-        private void UpdateLowestScore(long score, HashSet<(Point location, Point direction)> visitedLocations)
+        private void UpdateLowestScore(long score)
         {
             if (score < _lowestScore)
             {
                 _lowestScore = score;
-                _lowestScoringRoute = visitedLocations;
             }
         }
     }
